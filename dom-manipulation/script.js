@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       populateCategories();
       showFilteredQuotes();
-      fetchQuotesFromServer(); // Sync with server on load
+      syncQuotes(); // Sync with server on load
     }
   
     function saveQuotes() {
@@ -115,6 +115,11 @@ document.addEventListener("DOMContentLoaded", () => {
       } catch (error) {
         console.error('Error syncing with server:', error);
       }
+    }
+  
+    async function syncQuotes() {
+      // Sync local quotes with the server
+      await fetchQuotesFromServer();
     }
   
     function exportQuotes() {
