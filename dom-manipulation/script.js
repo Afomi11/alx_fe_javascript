@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
     let quotes = [];
     let categories = new Set();
+    const API_URL = 'https://jsonplaceholder.typicode.com/posts'; // Mock API URL
   
     function loadQuotes() {
       const storedQuotes = localStorage.getItem('quotes');
@@ -14,16 +15,12 @@ document.addEventListener("DOMContentLoaded", () => {
         quotes = JSON.parse(storedQuotes);
         categories = new Set(quotes.map(quote => quote.category));
       } else {
-        quotes = [
-          { text: "The only limit to our realization of tomorrow is our doubts of today.", category: "Inspiration" },
-          { text: "Do not wait to strike till the iron is hot; but make it hot by striking.", category: "Motivation" },
-          { text: "Great minds discuss ideas; average minds discuss events; small minds discuss people.", category: "Wisdom" }
-        ];
-        categories = new Set(quotes.map(quote => quote.category));
-        saveQuotes();
+        quotes = [];
+        categories = new Set();
       }
       populateCategories();
       showFilteredQuotes();
+      syncWithServer(); // Sync with server on load
     }
   
     function saveQuotes() {
@@ -96,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
             categories = new Set(quotes.map(quote => quote.category));
             saveQuotes();
             populateCategories();
-            showFilteredQuotes(); // Optional: Show a random quote after importing
+            showFilteredQuotes();
             alert('Quotes imported successfully!');
           } else {
             alert('Invalid file format.');
@@ -112,6 +109,24 @@ document.addEventListener("DOMContentLoaded", () => {
       showFilteredQuotes();
     }
   
+    function syncWithServer() {
+      fetch(API_URL)
+        .then(response => response.json())
+        .then(serverQuotes => {
+          // Simple conflict resolution: server data takes precedence
+          quotes = serverQuotes.map(quote => ({
+            text: quote.title, // Mock API does not have a "text" field, using "title" instead
+            category: quote.userId // Mock API does not have a "category" field, using "userId" instead
+          }));
+          categories = new Set(quotes.map(quote => quote.category));
+          saveQuotes();
+          populateCategories();
+          showFilteredQuotes();
+          alert('Data synchronized with server!');
+        })
+        .catch(error => console.error('Error syncing with server:', error));
+    }
+  
     // Event listeners
     newQuoteButton.addEventListener('click', showFilteredQuotes);
     exportButton.addEventListener('click', exportQuotes);
@@ -120,6 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
     loadQuotes();
   });
+  
   
   
   
