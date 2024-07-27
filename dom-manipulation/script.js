@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const addQuoteButton = document.getElementById('addQuote');
     const newQuoteText = document.getElementById('newQuoteText');
     const newQuoteCategory = document.getElementById('newQuoteCategory');
+    const categoryFilter = document.getElementById('categoryFilter');
   
     // Quotes array with objects containing text and category properties
     let quotes = [
@@ -29,16 +30,41 @@ document.addEventListener("DOMContentLoaded", () => {
         newQuoteText.value = '';
         newQuoteCategory.value = '';
         alert('Quote added successfully!');
+        showRandomQuote(); // Display a new quote after adding one
       } else {
         alert('Please enter both a quote and a category.');
       }
     }
   
+    // Function to filter quotes by category
+    function filterQuotes(category) {
+      const filteredQuotes = quotes.filter(quote => quote.category === category);
+      if (filteredQuotes.length > 0) {
+        // Display filtered quotes or a random quote from filtered quotes
+        const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
+        const quote = filteredQuotes[randomIndex];
+        quoteDisplay.innerHTML = `<p>${quote.text}</p><p><em>Category: ${quote.category}</em></p>`;
+      } else {
+        quoteDisplay.textContent = 'No quotes found for this category.';
+      }
+    }
+  
+    // Populate category filter options
+    const uniqueCategories = [...new Set(quotes.map(quote => quote.category))];
+    uniqueCategories.forEach(category => {
+      const option = document.createElement('option');
+      option.value = category;
+      option.text = category;
+      categoryFilter.appendChild(option);
+    });
+  
     // Event listeners
     newQuoteButton.addEventListener('click', showRandomQuote);
     addQuoteButton.addEventListener('click', addQuote);
+    categoryFilter.addEventListener('change', () => filterQuotes(categoryFilter.value));
   
     // Display an initial random quote
     showRandomQuote();
   });
+  
   
