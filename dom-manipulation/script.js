@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       populateCategories();
       showFilteredQuotes();
-      syncWithServer(); // Sync with server on load
+      fetchQuotesFromServer(); // Sync with server on load
     }
   
     function saveQuotes() {
@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", () => {
       showFilteredQuotes();
     }
   
-    function syncWithServer() {
+    function fetchQuotesFromServer() {
       fetch(API_URL)
         .then(response => response.json())
         .then(serverQuotes => {
@@ -135,6 +135,7 @@ document.addEventListener("DOMContentLoaded", () => {
   
     loadQuotes();
   });
+  
   
   
   
