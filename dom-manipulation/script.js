@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let quotes = [];
     let categories = new Set();
   
-    // Function to load quotes from local storage
     function loadQuotes() {
       const storedQuotes = localStorage.getItem('quotes');
       if (storedQuotes) {
@@ -27,12 +26,10 @@ document.addEventListener("DOMContentLoaded", () => {
       showFilteredQuotes();
     }
   
-    // Function to save quotes to local storage
     function saveQuotes() {
       localStorage.setItem('quotes', JSON.stringify(quotes));
     }
   
-    // Function to populate the category filter dropdown
     function populateCategories() {
       categoryFilter.innerHTML = '<option value="all">All Categories</option>';
       categories.forEach(category => {
@@ -43,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   
-    // Function to display quotes based on the selected category
     function showFilteredQuotes() {
       const selectedCategory = categoryFilter.value;
       const filteredQuotes = selectedCategory === 'all'
@@ -60,7 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
       quoteDisplay.innerHTML = `<p>${quote.text}</p><p><em>Category: ${quote.category}</em></p>`;
     }
   
-    // Function to add a new quote
     function addQuote() {
       const quoteText = document.getElementById('newQuoteText').value.trim();
       const quoteCategory = document.getElementById('newQuoteCategory').value.trim();
@@ -79,7 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   
-    // Function to export quotes to a JSON file
     function exportQuotes() {
       const blob = new Blob([JSON.stringify(quotes, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -92,7 +86,6 @@ document.addEventListener("DOMContentLoaded", () => {
       URL.revokeObjectURL(url);
     }
   
-    // Function to import quotes from a JSON file
     function importFromJsonFile(event) {
       const fileReader = new FileReader();
       fileReader.onload = function(event) {
@@ -115,15 +108,19 @@ document.addEventListener("DOMContentLoaded", () => {
       fileReader.readAsText(event.target.files[0]);
     }
   
+    function filterQuotes() {
+      showFilteredQuotes();
+    }
+  
     // Event listeners
     newQuoteButton.addEventListener('click', showFilteredQuotes);
     exportButton.addEventListener('click', exportQuotes);
     importFileInput.addEventListener('change', importFromJsonFile);
-    categoryFilter.addEventListener('change', showFilteredQuotes);
+    categoryFilter.addEventListener('change', filterQuotes);
   
-    // Load quotes from local storage and show filtered quotes
     loadQuotes();
   });
+  
   
   
   
