@@ -4,12 +4,29 @@ document.addEventListener("DOMContentLoaded", () => {
     const exportButton = document.getElementById('exportQuotes');
     const importFileInput = document.getElementById('importFile');
     const categoryFilter = document.getElementById('categoryFilter');
+    const notificationContainer = document.getElementById('notificationContainer'); // Notification container
   
     let quotes = [];
     let categories = new Set();
     const API_URL = 'https://jsonplaceholder.typicode.com/posts'; // Mock API URL for fetching
     const POST_API_URL = 'https://jsonplaceholder.typicode.com/posts'; // Mock API URL for posting
     const SYNC_INTERVAL = 60000; // 60 seconds
+  
+    function showNotification(message, type = 'info') {
+      // Create a notification element
+      const notification = document.createElement('div');
+      notification.className = `notification ${type}`;
+      notification.textContent = message;
+  
+      // Append notification to container
+      notificationContainer.innerHTML = ''; // Clear previous notifications
+      notificationContainer.appendChild(notification);
+  
+      // Remove notification after 5 seconds
+      setTimeout(() => {
+        notificationContainer.removeChild(notification);
+      }, 5000);
+    }
   
     function loadQuotes() {
       const storedQuotes = localStorage.getItem('quotes');
@@ -71,12 +88,12 @@ document.addEventListener("DOMContentLoaded", () => {
         saveQuotes();
         populateCategories();
         showFilteredQuotes();
-        alert('Quote added successfully!');
+        showNotification('Quote added successfully!', 'success');
   
         // Post the new quote to the server
         await postQuoteToServer(newQuote);
       } else {
-        alert('Please enter both a quote and a category.');
+        showNotification('Please enter both a quote and a category.', 'error');
       }
     }
   
@@ -115,14 +132,13 @@ document.addEventListener("DOMContentLoaded", () => {
         saveQuotes();
         populateCategories();
         showFilteredQuotes();
-        alert('Data synchronized with server!');
+        showNotification('Quotes synced with server!', 'info');
       } catch (error) {
         console.error('Error syncing with server:', error);
       }
     }
   
     async function syncQuotes() {
-      // Sync local quotes with the server
       await fetchQuotesFromServer();
     }
   
@@ -136,6 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      showNotification('Quotes exported successfully!', 'success');
     }
   
     function importFromJsonFile(event) {
@@ -149,12 +166,12 @@ document.addEventListener("DOMContentLoaded", () => {
             saveQuotes();
             populateCategories();
             showFilteredQuotes();
-            alert('Quotes imported successfully!');
+            showNotification('Quotes imported successfully!', 'success');
           } else {
-            alert('Invalid file format.');
+            showNotification('Invalid file format.', 'error');
           }
         } catch (error) {
-          alert('Error importing quotes: ' + error.message);
+          showNotification('Error importing quotes: ' + error.message, 'error');
         }
       };
       fileReader.readAsText(event.target.files[0]);
