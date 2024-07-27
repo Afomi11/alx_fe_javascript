@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let categories = new Set();
     const API_URL = 'https://jsonplaceholder.typicode.com/posts'; // Mock API URL for fetching
     const POST_API_URL = 'https://jsonplaceholder.typicode.com/posts'; // Mock API URL for posting
+    const SYNC_INTERVAL = 60000; // 60 seconds
   
     function loadQuotes() {
       const storedQuotes = localStorage.getItem('quotes');
@@ -22,6 +23,9 @@ document.addEventListener("DOMContentLoaded", () => {
       populateCategories();
       showFilteredQuotes();
       syncQuotes(); // Sync with server on load
+  
+      // Set up periodic syncing
+      setInterval(syncQuotes, SYNC_INTERVAL);
     }
   
     function saveQuotes() {
