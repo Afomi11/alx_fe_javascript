@@ -109,22 +109,24 @@ document.addEventListener("DOMContentLoaded", () => {
       showFilteredQuotes();
     }
   
-    function fetchQuotesFromServer() {
-      fetch(API_URL)
-        .then(response => response.json())
-        .then(serverQuotes => {
-          // Simple conflict resolution: server data takes precedence
-          quotes = serverQuotes.map(quote => ({
-            text: quote.title, // Mock API does not have a "text" field, using "title" instead
-            category: quote.userId // Mock API does not have a "category" field, using "userId" instead
-          }));
-          categories = new Set(quotes.map(quote => quote.category));
-          saveQuotes();
-          populateCategories();
-          showFilteredQuotes();
-          alert('Data synchronized with server!');
-        })
-        .catch(error => console.error('Error syncing with server:', error));
+    async function fetchQuotesFromServer() {
+      try {
+        const response = await fetch(API_URL);
+        const serverQuotes = await response.json();
+  
+        // Simple conflict resolution: server data takes precedence
+        quotes = serverQuotes.map(quote => ({
+          text: quote.title, // Mock API does not have a "text" field, using "title" instead
+          category: quote.userId // Mock API does not have a "category" field, using "userId" instead
+        }));
+        categories = new Set(quotes.map(quote => quote.category));
+        saveQuotes();
+        populateCategories();
+        showFilteredQuotes();
+        alert('Data synchronized with server!');
+      } catch (error) {
+        console.error('Error syncing with server:', error);
+      }
     }
   
     // Event listeners
