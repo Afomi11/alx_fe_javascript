@@ -7,7 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
   
     let quotes = [];
     let categories = new Set();
-    const API_URL = 'https://jsonplaceholder.typicode.com/posts'; // Mock API URL
+    const API_URL = 'https://jsonplaceholder.typicode.com/posts'; // Mock API URL for fetching
+    const POST_API_URL = 'https://jsonplaceholder.typicode.com/posts'; // Mock API URL for posting
   
     function loadQuotes() {
       const storedQuotes = localStorage.getItem('quotes');
@@ -53,12 +54,13 @@ document.addEventListener("DOMContentLoaded", () => {
       quoteDisplay.innerHTML = `<p>${quote.text}</p><p><em>Category: ${quote.category}</em></p>`;
     }
   
-    function addQuote() {
+    async function addQuote() {
       const quoteText = document.getElementById('newQuoteText').value.trim();
       const quoteCategory = document.getElementById('newQuoteCategory').value.trim();
   
       if (quoteText && quoteCategory) {
-        quotes.push({ text: quoteText, category: quoteCategory });
+        const newQuote = { text: quoteText, category: quoteCategory };
+        quotes.push(newQuote);
         categories.add(quoteCategory);
         document.getElementById('newQuoteText').value = '';
         document.getElementById('newQuoteCategory').value = '';
@@ -66,8 +68,52 @@ document.addEventListener("DOMContentLoaded", () => {
         populateCategories();
         showFilteredQuotes();
         alert('Quote added successfully!');
+  
+        // Post the new quote to the server
+        await postQuoteToServer(newQuote);
       } else {
         alert('Please enter both a quote and a category.');
+      }
+    }
+  
+    async function postQuoteToServer(quote) {
+      try {
+        const response = await fetch(POST_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(quote)
+        });
+  
+        if (response.ok) {
+          const responseData = await response.json();
+          console.log('Quote posted to server:', responseData);
+        } else {
+          console.error('Error posting quote to server:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error posting quote to server:', error);
+      }
+    }
+  
+    async function fetchQuotesFromServer() {
+      try {
+        const response = await fetch(API_URL);
+        const serverQuotes = await response.json();
+  
+        // Simple conflict resolution: server data takes precedence
+        quotes = serverQuotes.map(quote => ({
+          text: quote.title, // Mock API does not have a "text" field, using "title" instead
+          category: quote.userId // Mock API does not have a "category" field, using "userId" instead
+        }));
+        categories = new Set(quotes.map(quote => quote.category));
+        saveQuotes();
+        populateCategories();
+        showFilteredQuotes();
+        alert('Data synchronized with server!');
+      } catch (error) {
+        console.error('Error syncing with server:', error);
       }
     }
   
@@ -109,34 +155,15 @@ document.addEventListener("DOMContentLoaded", () => {
       showFilteredQuotes();
     }
   
-    async function fetchQuotesFromServer() {
-      try {
-        const response = await fetch(API_URL);
-        const serverQuotes = await response.json();
-  
-        // Simple conflict resolution: server data takes precedence
-        quotes = serverQuotes.map(quote => ({
-          text: quote.title, // Mock API does not have a "text" field, using "title" instead
-          category: quote.userId // Mock API does not have a "category" field, using "userId" instead
-        }));
-        categories = new Set(quotes.map(quote => quote.category));
-        saveQuotes();
-        populateCategories();
-        showFilteredQuotes();
-        alert('Data synchronized with server!');
-      } catch (error) {
-        console.error('Error syncing with server:', error);
-      }
-    }
-  
     // Event listeners
-    newQuoteButton.addEventListener('click', showFilteredQuotes);
+    newQuoteButton.addEventListener('click', addQuote);
     exportButton.addEventListener('click', exportQuotes);
     importFileInput.addEventListener('change', importFromJsonFile);
     categoryFilter.addEventListener('change', filterQuotes);
   
     loadQuotes();
   });
+  
   
   
   
