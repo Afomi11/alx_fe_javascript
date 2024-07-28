@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
           saveQuotes();
           populateCategories();
           showFilteredQuotes();
-          alert('Data synchronized with server!');
+          alert('Quotes synced with server!');
       } catch (error) {
           console.error('Error syncing with server:', error);
       }
