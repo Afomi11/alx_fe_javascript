@@ -151,6 +151,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
   }
 
+  function syncQuotes() {
+      setInterval(fetchQuotesFromServer, 60000); // Sync with server every 60 seconds
+  }
+
   // Event listeners
   newQuoteButton.addEventListener('click', addQuote);
   exportButton.addEventListener('click', exportQuotes);
@@ -158,5 +162,6 @@ document.addEventListener("DOMContentLoaded", () => {
   categoryFilter.addEventListener('change', filterQuotes);
 
   loadQuotes();
+  syncQuotes();
 });
 
